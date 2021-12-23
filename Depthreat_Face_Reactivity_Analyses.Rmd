@@ -91,8 +91,8 @@ summary(lm(ramyg.Fear_GT_Calm~FINAL_THREAT+FINAL_DEPRIVATION+SEX+S3AGE+logITN_ag
 
 #ROIs from whole brain analysis and Depression
 ```{r, warning=FALSE, message=FALSE, tidy=TRUE}
-summary(lm(CDI_TOT~Fear_GT_Calm.pcc+FINAL_THREAT+FINAL_DEPRIVATION+SEX+S3AGE+logITN_age3,data=dtf))
-summary(lm(CDI_TOT~Fear_GT_Calm.mpfc+FINAL_THREAT+FINAL_DEPRIVATION+SEX+S3AGE+logITN_age3,data=dtf))
+summary(lm(CDI_TOT~mPFC.p0003.Fear_GT_Calm+FINAL_THREAT+FINAL_DEPRIVATION+SEX+S3AGE+logITN_age3,data=dtf))
+summary(lm(CDI_TOT~lamyg.p0003.Fear_GT_Calm+FINAL_THREAT+FINAL_DEPRIVATION+SEX+S3AGE+logITN_age3,data=dtf))
 ```
 #multicollinearity check
 ```{r, warning=FALSE, message=FALSE, tidy=TRUE}
@@ -101,43 +101,11 @@ imcdiag(lm(CDI_TOT~Fear_GT_Calm.mpfc+FINAL_THREAT+FINAL_DEPRIVATION+SEX+S3AGE+lo
 ```
 #ROIs from whole brain analysis and PTSD
 ```{r, warning=FALSE, message=FALSE, tidy=TRUE}
-summary(zeroinfl(PTSD_SEV_COMBINED~SEX+S3AGE+logITN_age3+FINAL_THREAT+FINAL_DEPRIVATION+Fear_GT_Calm.pcc,data=dtf))
-summary(zeroinfl(PTSD_SEV_COMBINED~Fear_GT_Calm.mpfc+FINAL_THREAT+FINAL_DEPRIVATION+SEX+S3AGE+logITN_age3,data=dtf))
+summary(zeroinfl(PTSD_SEV_COMBINED~mPFC.p0003.Fear_GT_Calm+FINAL_THREAT+FINAL_DEPRIVATION+SEX+S3AGE+logITN_age3,data=dtf))
+summary(zeroinfl(PTSD_SEV_COMBINED~lamyg.p0003.Fear_GT_Calm+FINAL_THREAT+FINAL_DEPRIVATION+SEX+S3AGE+logITN_age3,data=dtf))
 ```
 #multicollinearity check
 ```{r, warning=FALSE, message=FALSE, tidy=TRUE}
-imcdiag(zeroinfl(PTSD_SEV_COMBINED~SEX+S3AGE+logITN_age3+FINAL_THREAT+FINAL_DEPRIVATION+Fear_GT_Calm.pcc,data=dtf))
-imcdiag(zeroinfl(PTSD_SEV_COMBINED~Fear_GT_Calm.mpfc+FINAL_THREAT+FINAL_DEPRIVATION+SEX+S3AGE+logITN_age3,data=dtf))
-```
-
-#Mediation of the association between age 3 family income (log transformed) and PTSD (count) by precuneus
-```{r, warning=FALSE, message=FALSE, tidy=TRUE}
-PTpccITNMed <- function(x, id) {
-  data <- x[id,]
-  OutcomeModel <- coef(zeroinfl(PTSD_SEV_COMBINED ~ Fear_GT_Calm.pcc+FINAL_THREAT+FINAL_DEPRIVATION+SEX+S3AGE+logITN_age3, data = data))
-  OutcomeModelAlone <- coef(zeroinfl(PTSD_SEV_COMBINED ~ logITN_age3, data = data))
-  MedModel <- coef(lm(Fear_GT_Calm.pcc ~ logITN_age3, data = data))
-  type1 <- unname(OutcomeModel["count_Fear_GT_Calm.pcc"] * MedModel["logITN_age3"])
-  return(type1 = type1)
-}
-set.seed(123) 
-boot.PTpccITNMed <- boot(dtf, statistic = PTpccITNMed, R = 10000)
-boot.PTpccITNMed 
-boot.ci(boot.PTpccITNMed, type = "bca", index = 1)
-```
-
-#Mediation of the association between age 3 family income (log transformed) and PTSD (count) by dmPFC
-```{r, warning=FALSE, message=FALSE, tidy=TRUE}
-PTmpfcITNMed <- function(x, id) {
-  data <- x[id,]
-  OutcomeModel <- coef(zeroinfl(PTSD_SEV_COMBINED ~ Fear_GT_Calm.mpfc+FINAL_THREAT+FINAL_DEPRIVATION+SEX+S3AGE+logITN_age3, data = data))
-  OutcomeModelAlone <- coef(zeroinfl(PTSD_SEV_COMBINED ~ logITN_age3, data = data))
-  MedModel <- coef(lm(Fear_GT_Calm.mpfc ~ logITN_age3, data = data))
-  type1 <- unname(OutcomeModel["count_Fear_GT_Calm.mpfc"] * MedModel["logITN_age3"])
-  return(type1 = type1)
-}
-set.seed(123) 
-boot.PTmpfcITNMed <- boot(dtf, statistic = PTmpfcITNMed, R = 10000)
-boot.PTmpfcITNMed 
-boot.ci(boot.PTmpfcITNMed, type = "bca", index = 1)
+imcdiag(zeroinfl(PTSD_SEV_COMBINED~SEX+S3AGE+logITN_age3+FINAL_THREAT+FINAL_DEPRIVATION+mPFC.p0003.Fear_GT_Calm,data=dtf))
+imcdiag(zeroinfl(PTSD_SEV_COMBINED~lamyg.p0003.Fear_GT_Calm+FINAL_THREAT+FINAL_DEPRIVATION+SEX+S3AGE+logITN_age3,data=dtf))
 ```
